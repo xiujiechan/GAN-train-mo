@@ -1,3 +1,5 @@
+import time
+from pandas import Series
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -8,6 +10,7 @@ import traceback
 #pip install beautifulsoup4
 #pip install lxml
 
+#下載圖片腳本
 def download(url, filename):
     if os.path.exists(filename):
         print('file exists!')
@@ -21,6 +24,11 @@ def download(url, filename):
                     f.write(chunk)
                     f.flush()
         return filename
+    except requests.exceptions.RequestException as e: 
+        print(f"Error downloading {url}: {e}") 
+        if retries > 0: 
+            print(f"Retrying... ({retries} attempts left)") 
+            time.sleep(5) # 等待 5 秒後重試 return download(url, filename, retries - 1
     except KeyboardInterrupt:
         if os.path.exists(filename):
             os.remove(filename)
@@ -37,7 +45,7 @@ if os.path.exists('imgs') is False:
 start = 1
 end = 200
 for i in range(start, end + 1):
-    url = 'http://konachan.net/post?page=%d&tags=' % i
+    url = f'http://konachan.net/post?page={i}&tags=' 
     html = requests.get(url).text
     #print('html : \n',html)
     soup = BeautifulSoup(html, 'html.parser')
@@ -49,6 +57,7 @@ for i in range(start, end + 1):
     print('%d / %d' % (i, end))
 
 
+#臉部偵測腳本
 import cv2
 import sys
 import os.path
