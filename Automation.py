@@ -16,7 +16,7 @@ def generate_and_upload():
         generate_images()  # 生成圖像
         os.system('git add .')
         os.system('git commit -m "Add new"')
-        os.system('git pull')
+        os.system('git pull --rebase --autostash')# 使用 rebase 和自動存儲
         os.system('git push')
         time.sleep(3600)  # 每小時執行一次
 
@@ -27,7 +27,7 @@ class MyHandler(FileSystemEventHandler):
         else:
             os.system('git add .')
             os.system('git commit -m "Auto commit new"')
-            os.system('git pull')
+            os.system('git pull --rebase --autostash')# 使用 rebase 和自動存儲
             os.system('git push')
 
 if __name__ == "__main__":
