@@ -29,6 +29,7 @@ class MyHandler(FileSystemEventHandler):
             os.system('git commit -m "Auto commit new"')
             os.system('git pull --rebase --autostash')# 使用 rebase 和自動存儲
             os.system('git push')
+            time.sleep(3600)
 
 if __name__ == "__main__":
     path = "C:/Users/user/Desktop/GAN 20241117/result"  # 修改為正確的路徑格式
