@@ -1,5 +1,5 @@
 ~~~dataset :  Dataset ImageFolder
-    Number of datapoints: 447
+    Number of datapoints: 554
     Root location: data/
     StandardTransform
 Transform: Compose(
