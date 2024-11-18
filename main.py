@@ -1,4 +1,5 @@
 import os
+import sys
 import ipdb
 import torch as t
 import torchvision as tv
@@ -6,8 +7,9 @@ import tqdm
 from model import NetG, NetD
 from torchnet.meter import AverageValueMeter 
 from IPython.core.debugger import Pdb
+from visualize import Visualizer
 ipdb = Pdb()
-#import sys
+
 # coding:utf8
 
 # print('sys.path : ',sys.path)
@@ -15,7 +17,10 @@ ipdb = Pdb()
 #c:\users\user\anaconda3\lib\site-packages
 #from PIL import Image
 
+#加入路徑，確保可以找到model.py
+sys.path.append(os.path.dirname(os.path.abspath(__file__))) 
 
+#配置類定義
 class Config(object):
     data_path = 'data/'  # 把數據集存放路徑 把偵測好的臉部影像存放在faces 開一個新的data folder 把faces放進去 確認名稱
     num_workers = 4  # 多進程加載數據所用的進程數
@@ -29,23 +34,18 @@ class Config(object):
     nz = 100  # 噪聲維度
     ngf = 64  # 生成器feature map數
     ndf = 64  # 判别器feature map數
-
     save_path = 'result/'  # 生成圖片保存路徑
-
     if os.path.exists('result') is False:
         os.mkdir('result')
-
     vis = False  # 是否使用visdom可視化
     env = 'GAN'  # visdom的env
     plot_every = 2  # 每間隔20 batch，visdom畫圖一次
-
     debug_file = '/tmp/debuggan'  # 存在該文件則進入debug模式
     d_every = 1  # 每1個batch訓練一次判别器
     g_every = 5  # 每5個batch訓練一次生成器
     save_every = 10  # 每10個epoch保存一次模型
     netd_path = None  # 'checkpoints/netd_.pth' #預訓練模型
     netg_path = None  # 'checkpoints/netg_211.pth'
-
     # 只測試不訓練
     gen_img = 'result0420.png'
     # 從512張生成的圖片中保存最好的64張
@@ -54,18 +54,25 @@ class Config(object):
     gen_mean = 0  # 噪聲的均值
     gen_std = 1  # 噪聲的方差
 
-
 opt = Config()
 #opt.gpu = True # 確保使用 GPU
 
+# 確保生成器和判別器初始化 
+def main(): 
+    generator = NetG(opt) 
+    discriminator = NetD(opt) 
+    print("Generator and Discriminator initialized successfully")
 
+if __name__ == "__main__":
+    main()
+
+#訓練函數
 def train(**kwargs):
     for k_, v_ in kwargs.items():
         setattr(opt, k_, v_)
 
     device = t.device('cuda') if opt.gpu else t.device('cpu')
-    if opt.vis:
-        from visualize import Visualizer
+    if opt.vis:      
         vis = Visualizer(opt.env)       
 
     # 數據
