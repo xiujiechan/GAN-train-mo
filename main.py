@@ -23,6 +23,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 #配置類定義
 class Config(object):
     data_path = r'C:\Users\user\Desktop\GAN 20241117\data\faces'  # 路徑 把偵測好的臉部影像存放在faces 開一個新的data folder 把faces放進去 確認名稱
+    print(f"Using data path: {data_path}") 
+    print(f"Contents of data path: {os.listdir(data_path)}")
     num_workers = 4  # 多進程加載數據所用的進程數
     image_size = 96  # 圖片尺寸
     batch_size = 256
