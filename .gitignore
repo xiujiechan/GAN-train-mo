@@ -1,0 +1,10 @@
+# 不包含Python編譯文件
+__pycache__/
+*.py[cod]
+*.so
+
+# 不包含臨時文件
+*.swp
+*.swo
+*~
+
