@@ -1,7 +1,7 @@
 my_project/ 
 ├── dataset.py # 定義數據集類 
 ├── model.py # 定義模型 
-├── GAN_photos.py # 網頁爬取程式  爬取images 再偵測臉部face  加入貓臉300張、400張、500張，觀察不同張數的實驗結果，提高泛化能力
+├── GAN_photos.py # 網頁爬取程式  爬取images 再偵測臉部face  加入貓臉100張、200張、300張，觀察不同張數的實驗結果，提高泛化能力
 ├── visualizer.py # Visualizer 類封裝 visdom 的基本操作
 ├── main.py # 執行主程式邏輯      train=>result   generate=>checkpoints       
 ├── utils.py # 輔助函數(在main.py裡面建立)
