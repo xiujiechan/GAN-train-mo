@@ -10,6 +10,7 @@ from IPython.core.debugger import Pdb
 from visualize import Visualizer
 ipdb = Pdb()
 from PIL import Image
+from datetime import datetime
 
 
 # coding:utf8
@@ -192,13 +193,20 @@ def generate(**kwargs):
     随機生成動漫頭像，並根據netd的分數選擇較好的
     """
     for k_, v_ in kwargs.items():
+        print("Generation function started"
         setattr(opt, k_, v_)
 
     device = t.device('cuda'if opt.gpu else 'cpu')  
+    print(f"Device set to {device}")
 
+    #檢查檔案路徑是否存在
+    print(f"Checking if netd path exists: {os.path.exists(opt.netd_path)}") 
+    print(f"Checking if netg path exists: {os.path.exists(opt.netg_path)}")
+        
     netg, netd = NetG(opt).to(device).eval(), NetD(opt).to(device).eval()
     noises = t.randn(opt.gen_search_num, opt.nz, 1, 1).normal_(opt.gen_mean, opt.gen_std)
     noises = noises.to(device)
+    print("Noises generated")
 
     map_location = lambda storage, loc: storage
     netd.load_state_dict(t.load(opt.netd_path, map_location=map_location))
@@ -207,12 +215,14 @@ def generate(**kwargs):
     # 生成圖片，並計算圖片在判别器的分數
     fake_img = netg(noises)
     scores = netd(fake_img).detach()
-
+    print(f"Scores calculated: {scores}")
+    
     # 挑選最好的幾張圖
     indexs = scores.topk(opt.gen_num)[1]
     result = []
     for ii in indexs:
         result.append(fake_img.data[ii])
+    print(f"Selected top {len(result)} images")
 
     # 設定生成圖片的輸出目錄 
     output_dir = "generated_images" 
