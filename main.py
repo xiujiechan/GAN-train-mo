@@ -39,8 +39,10 @@ class Config(object):
     ngf = 64  # 生成器feature map數
     ndf = 64  # 判别器feature map數
     save_path = 'result/'  # 生成圖片保存路徑
+
     if os.path.exists('result') is False:
         os.mkdir('result')
+
     vis = False  # 是否使用visdom可視化
     env = 'GAN'  # visdom的env
     plot_every = 2  # 每間隔20 batch，visdom畫圖一次
@@ -61,14 +63,13 @@ class Config(object):
 opt = Config()
 #opt.gpu = True # 確保使用 GPU
 
-# 確保生成器和判別器初始化 
-def main(): 
-    generator = NetG(opt) 
-    discriminator = NetD(opt) 
-    print("Generator and Discriminator initialized successfully")
-
-if __name__ == "__main__":
-    main()
+def get_latest_model_path(checkpoints_dir, model_prefix):
+    model_files = [f for f in os.listdir(checkpoints_dir) if f.startswith(model_prefix) and f.endswith('.pth')] 
+    model_files.sort() # 根據名稱排序，假設文件名中包含遞增的數字 
+    if model_files: 
+        return os.path.join(checkpoints_dir, model_files[-1]) # 返回最新的模型檔案路徑 
+    else: 
+        return
 
 #訓練函數
 def train(**kwargs):
@@ -252,11 +253,16 @@ def generate(**kwargs):
         os.makedirs(output_dir) 
         print("Output directory created")   
             
-    # 保存生成的圖片 
-    for i, img in enumerate(result): 
-        img_path = os.path.join(output_dir, f"generated_image_{i}.png")
-        tv.utils.save_image(img, img_path, normalize=True, value_range=(-1, 1))
-        print(f"Image {i} saved to {img_path}")
+    # 保存生成的圖片，使用時間戳作為唯一標識符 
+    try: 
+        for i, img in enumerate(result): 
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f') 
+            img_path = os.path.join(output_dir, f"generated_image_{timestamp}_{i}.png") 
+            tv.utils.save_image(img, img_path, normalize=True, value_range=(-1, 1)) 
+            print(f"Image {i} saved to {img_path}") 
+    except Exception as e:
+        print(f"Error saving images: {e}") 
+        print("Generation function completed")
 
 
 if __name__ == '__main__':
