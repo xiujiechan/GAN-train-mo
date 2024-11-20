@@ -193,15 +193,23 @@ def generate(**kwargs):
     随機生成動漫頭像，並根據netd的分數選擇較好的
     """
     for k_, v_ in kwargs.items():
-        print("Generation function started"
+        print("Generation function started")
         setattr(opt, k_, v_)
 
     device = t.device('cuda'if opt.gpu else 'cpu')  
     print(f"Device set to {device}")
 
+    # 設置模型檔案路徑
+    opt.netd_path = "C:/Users/user/Desktop/GAN 20241117/checkpoints/discriminator_model.pth"    
+    opt.netg_path = "C:/Users/user/Desktop/GAN 20241117/checkpoints/generator_model.pth"
+    
     #檢查檔案路徑是否存在
-    print(f"Checking if netd path exists: {os.path.exists(opt.netd_path)}") 
-    print(f"Checking if netg path exists: {os.path.exists(opt.netg_path)}")
+    if not os.path.exists(opt.netd_path): 
+        print(f"Discriminator model path does not exist: {opt.netd_path}") 
+        return 
+    if not os.path.exists(opt.netg_path):
+        print(f"Generator model path does not exist: {opt.netg_path}") 
+        return
         
     netg, netd = NetG(opt).to(device).eval(), NetD(opt).to(device).eval()
     noises = t.randn(opt.gen_search_num, opt.nz, 1, 1).normal_(opt.gen_mean, opt.gen_std)
@@ -212,11 +220,25 @@ def generate(**kwargs):
     netd.load_state_dict(t.load(opt.netd_path, map_location=map_location))
     netg.load_state_dict(t.load(opt.netg_path, map_location=map_location))
 
+# 嘗試預載入數據到緩衝區再載入模型 
+    try: 
+        import io 
+        with open(opt.netd_path, 'rb') as f: 
+            buffer = io.BytesIO(f.read()) 
+            netd.load_state_dict(t.load(buffer, map_location=map_location)) 
+        with open(opt.netg_path, 'rb') as f: 
+            buffer = io.BytesIO(f.read()) 
+            netg.load_state_dict(t.load(buffer, map_location=map_location)) 
+            print("Models loaded") 
+    except Exception as e: 
+        print(f"Error loading models: {e}") 
+        return
+
     # 生成圖片，並計算圖片在判别器的分數
     fake_img = netg(noises)
     scores = netd(fake_img).detach()
     print(f"Scores calculated: {scores}")
-    
+
     # 挑選最好的幾張圖
     indexs = scores.topk(opt.gen_num)[1]
     result = []
