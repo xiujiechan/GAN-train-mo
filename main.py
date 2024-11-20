@@ -9,20 +9,21 @@ from torchnet.meter import AverageValueMeter
 from IPython.core.debugger import Pdb
 from visualize import Visualizer
 ipdb = Pdb()
+from PIL import Image
+
 
 # coding:utf8
 
 # print('sys.path : ',sys.path)
 #sys.path.append('/lib/python3.11/site-packages')
 #c:\users\user\anaconda3\lib\site-packages
-#from PIL import Image
 
 #加入路徑，確保可以找到model.py
 sys.path.append(os.path.dirname(os.path.abspath(__file__))) 
 
 #配置類定義
 class Config(object):
-    data_path = r'C:\Users\user\Desktop\GAN 20241117\data\faces'  # 路徑 把偵測好的臉部影像存放在faces 開一個新的data folder 把faces放進去 確認名稱
+    data_path = r'C:\Users\user\Desktop\GAN 20241117\data\faces'  # 路徑 把偵測好的臉部影像存放在faces 開一個新的data folder 把faces放進去 
     print(f"Using data path: {data_path}") 
     print(f"Contents of data path: {os.listdir(data_path)}")
     num_workers = 4  # 多進程加載數據所用的進程數
@@ -212,9 +213,18 @@ def generate(**kwargs):
     result = []
     for ii in indexs:
         result.append(fake_img.data[ii])
-    # 保存圖片
-    tv.utils.save_image(t.stack(result), opt.gen_img, normalize=True, value_range=(-1, 1))
+
+    # 設定生成圖片的輸出目錄 
+    output_dir = "generated_images" 
+    if not os.path.exists(output_dir): 
+        os.makedirs(output_dir) 
+        
+    # 保存生成的圖片 
+    for i, img in enumerate(result): 
+        img_path = os.path.join(output_dir, f"generated_image_{i}.png")
+        tv.utils.save_image(img, img_path, normalize=True, value_range=(-1, 1))
 
 
 if __name__ == '__main__':
-    train()
+    generate()
+    #train()
