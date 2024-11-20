@@ -218,11 +218,13 @@ def generate(**kwargs):
     output_dir = "generated_images" 
     if not os.path.exists(output_dir): 
         os.makedirs(output_dir) 
-        
+        print("Output directory created")   
+            
     # 保存生成的圖片 
     for i, img in enumerate(result): 
         img_path = os.path.join(output_dir, f"generated_image_{i}.png")
         tv.utils.save_image(img, img_path, normalize=True, value_range=(-1, 1))
+        print(f"Image {i} saved to {img_path}")
 
 
 if __name__ == '__main__':
