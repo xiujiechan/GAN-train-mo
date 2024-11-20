@@ -226,5 +226,5 @@ def generate(**kwargs):
 
 
 if __name__ == '__main__':
-    generate()
     #train()
+    generate()
