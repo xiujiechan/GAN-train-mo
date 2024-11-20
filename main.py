@@ -128,8 +128,6 @@ def train(**kwargs):
         for ii, (img, _) in tqdm.tqdm(enumerate(dataloader)):
             real_img = img.to(device)
 
-            #ipdb.set_trace()  #置斷點
-
             if ii % opt.d_every == 0:
                 # 訓練判别器
                 optimizer_d.zero_grad()
@@ -147,7 +145,6 @@ def train(**kwargs):
                 optimizer_d.step()
 
                 error_d = error_d_fake + error_d_real
-
                 errord_meter.add(error_d.item())
 
             if ii % opt.g_every == 0:
@@ -188,21 +185,20 @@ def train(**kwargs):
             errorg_meter.reset()
 
 
-@t.no_grad()     #PyTorch 中的一個裝飾器（Decorator），用來在執行某些操作時禁用自動微分機制。這通常用於推理（inference）階段，即在不需要計算梯度的情況下運行模型，以節省內存和加速運行。在進行模型推理時，不需要計算梯度，只需執行前向傳遞。
+@t.no_grad()     #節省內存和加速運行。在進行模型推理時，不需要計算梯度，只需執行前向傳遞。
 def generate(**kwargs):
     """
     随機生成動漫頭像，並根據netd的分數選擇較好的
     """
     for k_, v_ in kwargs.items():
-        print("Generation function started")
         setattr(opt, k_, v_)
 
     device = t.device('cuda'if opt.gpu else 'cpu')  
-    print(f"Device set to {device}")
 
     # 設置模型檔案路徑
-    opt.netd_path = "C:/Users/user/Desktop/GAN 20241117/checkpoints/discriminator_model.pth"    
-    opt.netg_path = "C:/Users/user/Desktop/GAN 20241117/checkpoints/generator_model.pth"
+    checkpoints_dir = "C:/Users/user/Desktop/GAN 20241117/checkpoints" 
+    opt.netd_path = get_latest_model_path(checkpoints_dir, "netd") 
+    opt.netg_path = get_latest_model_path(checkpoints_dir, "netg")
     
     #檢查檔案路徑是否存在
     if not os.path.exists(opt.netd_path): 
