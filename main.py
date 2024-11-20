@@ -28,7 +28,7 @@ class Config(object):
     print(f"Using data path: {data_path}") 
     print(f"Contents of data path: {os.listdir(data_path)}")
     num_workers = 4  # 多進程加載數據所用的進程數
-    image_size = 96  # 圖片尺寸
+    image_size = 1024  # 圖片尺寸
     batch_size = 256
     max_epoch = 3000
     lr1 = 2e-4  # 生成器的學習率 
