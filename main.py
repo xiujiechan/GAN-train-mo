@@ -228,5 +228,7 @@ def generate(**kwargs):
 
 
 if __name__ == '__main__':
+    print("Starting generation...")    
     #train()
     generate()
+    print("Generation finished.")
