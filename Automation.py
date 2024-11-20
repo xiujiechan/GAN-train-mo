@@ -32,7 +32,7 @@ class MyHandler(FileSystemEventHandler):
             time.sleep(3600)
 
 if __name__ == "__main__":
-    path = "C:/Users/user/Desktop/GAN 20241117/result"  # 修改為正確的路徑格式
+    path = "C:/Users/user/Desktop/GAN 20241117/generated_images"  # 修改為正確的路徑格式
     event_handler = MyHandler()
     observer = Observer()
     observer.schedule(event_handler, path, recursive=True)
